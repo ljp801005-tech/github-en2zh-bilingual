@@ -24,6 +24,11 @@ if [[ "$NEW_VER" == "$OLD_VER" ]]; then
   echo "版本号未变化（仍为 $OLD_VER）。请先把脚本里的 @version 提升到更高版本，否则 Greasy Fork 不会生成新版本。"
   exit 1
 fi
+# 语义化版本递增检查（CI 会在 push 后再查一次，这里提前拦截，避免把坏版本推上去）
+if ! node -e 'const a=process.argv[1].split(".").map(Number),b=process.argv[2].split(".").map(Number);let ok=false;for(let i=0;i<3;i++){if(a[i]!==b[i]){ok=b[i]>a[i];break}}process.exit(ok?0:1)' "$OLD_VER" "$NEW_VER"; then
+  echo "版本号必须递增：$OLD_VER -> $NEW_VER 不是有效升级"
+  exit 1
+fi
 
 cp "$SRC" "$TARGET"
 node scripts/check-meta.mjs

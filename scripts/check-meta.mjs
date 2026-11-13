@@ -41,17 +41,22 @@ if (/^\/\/\s*@(name|description):[a-z-]+\s+/im.test(src)) {
   warns.push('存在本地化元数据键，Greasy Fork 会校验 @description:xx 非空，曾导致发布失败');
 }
 
-// 与上一次提交比较版本号：未递增会让 Greasy Fork 拒绝生成新版本
-let prevVer = null;
+// 与上一次提交比较版本号：只有脚本文件真的改了，才要求 @version 递增
+// （纯文档 / CI 改动不应触发版本检查，否则会误报）
+let prevVer = null, scriptChanged = false;
 try {
+  const names = execFileSync('git', ['diff', '--name-only', 'HEAD~1', 'HEAD'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+  scriptChanged = names.split('\n').some(n => n.trim() === FILE);
   const prev = execFileSync('git', ['show', `HEAD~1:${FILE}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
   prevVer = versionOf(prev);
 } catch { /* 首次提交或 shallow clone，跳过 */ }
-if (prevVer && ver) {
+if (prevVer && ver && scriptChanged) {
   if (!greater(ver, prevVer)) { problems.push(`@version 未递增：HEAD~1 为 ${prevVer}，当前为 ${ver}（Greasy Fork 不会创建新版本）`); }
   else { console.log(`版本递增 OK: ${prevVer} -> ${ver}`); }
+} else if (prevVer && !scriptChanged) {
+  console.log('脚本文件本次未变更，跳过版本递增检查');
 } else {
-  console.log('无上一版本可比，跳过递增检查');
+  console.log('无上一版本可比，跳过递增检查（发版脚本会单独校验版本递增）');
 }
 
 for (const w of warns) { console.log('WARN  ' + w); }
