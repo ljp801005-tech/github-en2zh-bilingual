@@ -31,6 +31,12 @@ if ! node -e 'const a=process.argv[1].split(".").map(Number),b=process.argv[2].s
 fi
 
 cp "$SRC" "$TARGET"
+# 若工作区里维护着 Greasy Fork 详细说明，一并同步（GF 会从这个文件自动更新页面说明）
+DESC_SRC="$ROOT/../GreasyFork发布说明.md"
+if [[ -f "$DESC_SRC" ]]; then
+  cp "$DESC_SRC" "$ROOT/docs/greasyfork-description.md"
+  echo "已同步详细说明 -> docs/greasyfork-description.md"
+fi
 node scripts/check-meta.mjs
 
 cd "$ROOT"

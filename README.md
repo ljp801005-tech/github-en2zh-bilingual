@@ -41,8 +41,10 @@ Greasy Fork 生成新版本（约数十秒）
 
 1. Greasy Fork 脚本页 →「管理」→「源代码同步」填入
    `https://raw.githubusercontent.com/ljp801005-tech/github-en2zh-bilingual/main/github-en2zh-bilingual.user.js`，模式选「自动」。
-2. Greasy Fork 用户页 https://greasyfork.org/zh-CN/users/webhook-info 复制专属 Webhook URL。
-3. 本仓库 → Settings → Webhooks → Add webhook：Payload URL 填该地址，Content type 选 `application/json`，事件选 `Just the push event`，Secret 留空。
+2. 同一页的「附加信息同步」填入
+   `https://raw.githubusercontent.com/ljp801005-tech/github-en2zh-bilingual/main/docs/greasyfork-description.md`，格式 Markdown —— 页面详细说明也会随仓库更新。
+3. Greasy Fork 用户页 https://greasyfork.org/zh-CN/users/webhook-info 复制专属 Webhook URL。
+4. 本仓库 → Settings → Webhooks → Add webhook：Payload URL 填该地址，Content type 选 `application/json`，事件选 `Just the push event`，Secret 留空。
 
 ## 维护者发版
 
@@ -92,7 +94,8 @@ git push --follow-tags
 |---|---|
 | `github-en2zh-bilingual.user.js` | 脚本本体（发版文件，Greasy Fork 同步此文件） |
 | `docs/说明与使用教程.md` | 完整安装、设置、判定规则、FAQ |
-| `docs/GreasyFork发布说明.md` | Greasy Fork 页面「详细说明」的 Markdown 源 |
+| `docs/greasyfork-description.md` | Greasy Fork 页面「详细说明」的同步源（GF 会自动拉取） |
+| `docs/GreasyFork发布说明.md` | 同上，中文文件名备份 |
 | `scripts/check-meta.mjs` | CI 用的语法 / 元数据 / 版本递增检查 |
 | `scripts/release.sh` | 一键发版 |
 | `.github/workflows/validate.yml` | push / PR 自动校验 |
