@@ -4,6 +4,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
 TARGET="$ROOT/github-en2zh-bilingual.user.js"
 SRC="${1:-$ROOT/../github网页英译中双语对照.user.js}"
 

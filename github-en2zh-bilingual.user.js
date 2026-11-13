@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         github网页英译中双语对照
 // @namespace   workbuddy.userjs.en2zh.bilingual
-// @version     1.3.0
+// @version     1.4.0
 // @description 自动识别网页语言、站点与页面类型：GitHub 及纯英文外网自动把英文段落译为中文，显示在原文上方或下方，中文站点自动跳过。GitHub 跳过代码/diff/文件名并原样保留内联代码。默认网易有道，可切换百度或本地离线服务。隐私说明：在线翻译时会将页面英文文本发送至你所选的翻译服务（有道/百度）；本地离线模式数据不出本机。
 // @author      WorkBuddy
 // @license     MIT
@@ -20,8 +20,6 @@
 // @connect     127.0.0.1
 // @connect     *
 // @run-at      document-idle
-// @downloadURL https://update.greasyfork.org/scripts/604516/github%E7%BD%91%E9%A1%B5%E8%8B%B1%E8%AF%91%E4%B8%AD%E5%8F%8C%E8%AF%AD%E5%AF%B9%E7%85%A7.user.js
-// @updateURL https://update.greasyfork.org/scripts/604516/github%E7%BD%91%E9%A1%B5%E8%8B%B1%E8%AF%91%E4%B8%AD%E5%8F%8C%E8%AF%AD%E5%AF%B9%E7%85%A7.meta.js
 // ==/UserScript==
 
 /* global GM_xmlhttpRequest, GM_getValue, GM_setValue, GM_registerMenuCommand, GM_addStyle */
@@ -37,6 +35,7 @@
   const DEFAULTS = {
     enabled: true,
     position: 'below',          // below = 译文在英文下方；above = 上方
+    corner: 'left',             // left = 浮动「译」图标在左下角；right = 右下角
     source: 'youdao',           // youdao | baidu | local
     autoFallback: true,         // 主源失败时自动尝试备用源
     baiduAppid: '',
@@ -982,15 +981,18 @@ html[data-wb-theme="dark"] .wb-trans{
   line-height:1.5 !important; letter-spacing:normal !important; text-transform:none !important;
 }
 #wb-tr-root{
-  position:fixed !important; right:18px !important; bottom:18px !important;
+  position:fixed !important; left:18px !important; bottom:18px !important;
   z-index:2147483647 !important; font-size:13px !important; color:#1f2937 !important;
 }
 #wb-tr-toggle{
   width:46px !important; height:46px !important; border-radius:50% !important;
   border:none !important; background:#2563eb !important; color:#fff !important;
   font-size:17px !important; font-weight:700 !important; cursor:pointer !important;
-  box-shadow:0 3px 12px rgba(0,0,0,.22) !important; margin-left:auto !important; display:block !important;
+  box-shadow:0 3px 12px rgba(0,0,0,.22) !important; margin-left:0 !important; display:block !important;
 }
+/* 可选：把图标与面板切回右下角 */
+html[data-wb-corner="right"] #wb-tr-root{left:auto !important; right:18px !important;}
+html[data-wb-corner="right"] #wb-tr-toggle{margin-left:auto !important;}
 #wb-tr-toggle.wb-off{background:#9ca3af !important;}
 #wb-tr-panel{
   width:320px !important; max-height:min(78vh,700px) !important; overflow-y:auto !important;
@@ -1084,6 +1086,11 @@ html[data-wb-theme="dark"] #wb-detect{background:rgba(120,170,255,.12) !importan
     else { document.documentElement.setAttribute('data-wb-theme', cfg.theme); }
   }
 
+  function applyCorner() {
+    if (cfg.corner === 'right') { document.documentElement.setAttribute('data-wb-corner', 'right'); }
+    else { document.documentElement.removeAttribute('data-wb-corner'); }
+  }
+
   function buildUI() {
     rootEl = document.createElement('div');
     rootEl.id = 'wb-tr-root';
@@ -1095,6 +1102,11 @@ html[data-wb-theme="dark"] #wb-detect{background:rgba(120,170,255,.12) !importan
         <div class="row"><label>译文位置</label>
           <div class="seg" style="flex:1">
             <button data-pos="above">英文上方</button><button data-pos="below">英文下方</button>
+          </div>
+        </div>
+        <div class="row"><label>图标位置</label>
+          <div class="seg" style="flex:1">
+            <button data-corner="left">左下角</button><button data-corner="right">右下角</button>
           </div>
         </div>
         <hr>
@@ -1174,6 +1186,11 @@ html[data-wb-theme="dark"] #wb-detect{background:rgba(120,170,255,.12) !importan
     rootEl.querySelectorAll('[data-pos]').forEach(function (b) {
       b.addEventListener('click', function () {
         cfg.position = b.dataset.pos; saveCfg(); repositionAll(); syncUI();
+      });
+    });
+    rootEl.querySelectorAll('[data-corner]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        cfg.corner = b.dataset.corner; saveCfg(); applyCorner(); syncUI();
       });
     });
 
@@ -1262,6 +1279,9 @@ html[data-wb-theme="dark"] #wb-detect{background:rgba(120,170,255,.12) !importan
     rootEl.querySelectorAll('[data-pos]').forEach(function (b) {
       b.classList.toggle('on', b.dataset.pos === cfg.position);
     });
+    rootEl.querySelectorAll('[data-corner]').forEach(function (b) {
+      b.classList.toggle('on', b.dataset.corner === (cfg.corner || 'left'));
+    });
     $('#wb-baidu-cfg').style.display = cfg.source === 'baidu' ? 'block' : 'none';
     $('#wb-local-cfg').style.display = cfg.source === 'local' ? 'block' : 'none';
     const host = location.hostname || location.href;
@@ -1330,6 +1350,7 @@ html[data-wb-theme="dark"] #wb-detect{background:rgba(120,170,255,.12) !importan
     if (!document.body) { return; }
     GM_addStyle(CSS);
     applyTheme();
+    applyCorner();
 
     detection = detectPage();
     const r = shouldRun(detection);
