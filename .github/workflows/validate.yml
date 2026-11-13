@@ -1,0 +1,32 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  userscript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 语法检查
+        run: node --check github-en2zh-bilingual.user.js
+
+      - name: 元数据与版本号检查
+        run: node scripts/check-meta.mjs
+
+      - name: 发版提示
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "push 已送达；Greasy Fork 由仓库 Webhook / 源代码同步自动拉取。"
+          echo "同步地址: https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/github-en2zh-bilingual.user.js"
+          echo "脚本页:   https://greasyfork.org/zh-CN/scripts/604516"
