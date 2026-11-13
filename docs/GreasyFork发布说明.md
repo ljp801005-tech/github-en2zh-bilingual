@@ -66,4 +66,4 @@
 
 ## 开源与验证
 
-许可 MIT，源码与文档：https://github.com/ljp801005-tech/github-en2zh-bilingual （push 到 main 会自动同步生成新版本）。脚本在本机 Chrome 中做过真实 DOM 测试：网页自动识别与 GitHub 适配 30 项、核心翻译流程 25 项，在有道源与本地离线源下分别全部通过；1.3.0 另加滚动补翻/验证页/失败重试 9 项与限流冷却恢复实测；1.4.0 新增图标位置专项 18 项，全部通过；`node --check` 语法检查通过。欢迎在仓库 Issues 或 Feedback 里反馈漏翻、误翻的页面结构。
+许可 MIT，源码与文档：https://github.com/ljp801005-tech/github-en2zh-bilingual （push 到 main 会自动同步生成新版本；本页说明同样由仓库自动同步）。脚本在本机 Chrome 中做过真实 DOM 测试：网页自动识别与 GitHub 适配 30 项、核心翻译流程 25 项，在有道源与本地离线源下分别全部通过；1.3.0 另加滚动补翻/验证页/失败重试 9 项与限流冷却恢复实测；1.4.0 新增图标位置专项 18 项，全部通过；`node --check` 语法检查通过。欢迎在仓库 Issues 或 Feedback 里反馈漏翻、误翻的页面结构。
