@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         github网页英译中双语对照
 // @namespace   workbuddy.userjs.en2zh.bilingual
-// @version     1.4.0
+// @version     1.5.0
 // @description 自动识别网页语言、站点与页面类型：GitHub 及纯英文外网自动把英文段落译为中文，显示在原文上方或下方，中文站点自动跳过。GitHub 跳过代码/diff/文件名并原样保留内联代码。默认网易有道，可切换百度或本地离线服务。隐私说明：在线翻译时会将页面英文文本发送至你所选的翻译服务（有道/百度）；本地离线模式数据不出本机。
 // @author      WorkBuddy
 // @license     MIT
@@ -984,26 +984,81 @@ html[data-wb-theme="dark"] .wb-trans{
   position:fixed !important; left:18px !important; bottom:18px !important;
   z-index:2147483647 !important; font-size:13px !important; color:#1f2937 !important;
 }
+/* 半透明毛玻璃「译」图标：静置时透出页面，悬停 / 展开面板时变清晰并轻轻上浮 */
 #wb-tr-toggle{
-  width:46px !important; height:46px !important; border-radius:50% !important;
-  border:none !important; background:#2563eb !important; color:#fff !important;
-  font-size:17px !important; font-weight:700 !important; cursor:pointer !important;
-  box-shadow:0 3px 12px rgba(0,0,0,.22) !important; margin-left:0 !important; display:block !important;
+  position:relative !important; width:46px !important; height:46px !important;
+  display:block !important; margin-left:0 !important; padding:0 !important;
+  border:1px solid rgba(255,255,255,.5) !important; border-radius:50% !important;
+  -webkit-appearance:none !important; appearance:none !important;
+  background:linear-gradient(145deg,rgba(125,185,255,.62) 0%,rgba(37,99,235,.46) 100%) !important;
+  -webkit-backdrop-filter:blur(10px) saturate(160%) !important;
+  backdrop-filter:blur(10px) saturate(160%) !important;
+  color:#fff !important;
+  font-size:17px !important; font-weight:600 !important; letter-spacing:.5px !important;
+  text-shadow:0 1px 3px rgba(15,40,120,.62) !important;
+  box-shadow:0 6px 18px rgba(30,64,175,.24), inset 0 1px 0 rgba(255,255,255,.5), inset 0 -7px 14px rgba(30,64,175,.14) !important;
+  opacity:.68 !important; cursor:pointer !important;
+  transition:opacity .25s ease, transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease !important;
+}
+#wb-tr-toggle::after{
+  content:"" !important; position:absolute !important; left:9px !important; right:9px !important; top:5px !important;
+  height:12px !important; border-radius:50% !important; pointer-events:none !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,0)) !important;
+}
+#wb-tr-toggle:hover, #wb-tr-toggle:focus-visible, #wb-tr-root.wb-open #wb-tr-toggle{
+  opacity:.96 !important; transform:translateY(-2px) !important;
+  box-shadow:0 10px 26px rgba(30,64,175,.32), inset 0 1px 0 rgba(255,255,255,.62), inset 0 -7px 14px rgba(30,64,175,.14) !important;
+}
+#wb-tr-toggle:active{transform:translateY(0) scale(.95) !important;}
+#wb-tr-toggle.wb-off{
+  background:linear-gradient(145deg,rgba(180,192,210,.58),rgba(100,116,139,.46)) !important;
+  border-color:rgba(255,255,255,.45) !important; text-shadow:none !important;
+  box-shadow:0 5px 15px rgba(71,85,105,.2), inset 0 1px 0 rgba(255,255,255,.42) !important;
+}
+html[data-wb-theme="dark"] #wb-tr-toggle{
+  border-color:rgba(255,255,255,.3) !important;
+  background:linear-gradient(145deg,rgba(96,165,250,.6),rgba(29,78,216,.5)) !important;
+  box-shadow:0 6px 20px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.28) !important;
+}
+@media (prefers-color-scheme:dark){
+  html:not([data-wb-theme="light"]) #wb-tr-toggle{
+    border-color:rgba(255,255,255,.3) !important;
+    background:linear-gradient(145deg,rgba(96,165,250,.6),rgba(29,78,216,.5)) !important;
+    box-shadow:0 6px 20px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.28) !important;
+  }
 }
 /* 可选：把图标与面板切回右下角 */
 html[data-wb-corner="right"] #wb-tr-root{left:auto !important; right:18px !important;}
 html[data-wb-corner="right"] #wb-tr-toggle{margin-left:auto !important;}
-#wb-tr-toggle.wb-off{background:#9ca3af !important;}
 #wb-tr-panel{
   width:320px !important; max-height:min(78vh,700px) !important; overflow-y:auto !important;
   margin-bottom:10px !important; padding:14px !important;
-  background:#fff !important; color:#1f2937 !important;
-  border:1px solid #e5e7eb !important; border-radius:12px !important;
-  box-shadow:0 8px 30px rgba(0,0,0,.18) !important;
+  background:rgba(255,255,255,.88) !important; color:#1f2937 !important;
+  border:1px solid rgba(255,255,255,.72) !important; border-radius:14px !important;
+  -webkit-backdrop-filter:blur(18px) saturate(160%) !important;
+  backdrop-filter:blur(18px) saturate(160%) !important;
+  box-shadow:0 12px 38px rgba(15,23,42,.16), inset 0 1px 0 rgba(255,255,255,.8) !important;
+  animation:wb-panel-in .2s ease-out !important;
 }
-html[data-wb-theme="dark"] #wb-tr-panel{background:#1f2430 !important; color:#e5e7eb !important; border-color:#3a4150 !important;}
+@keyframes wb-panel-in{
+  from{opacity:0; transform:translateY(6px);}
+  to{opacity:1; transform:translateY(0);}
+}
+html[data-wb-theme="dark"] #wb-tr-panel{
+  background:rgba(31,36,48,.88) !important; color:#e5e7eb !important;
+  border-color:rgba(255,255,255,.08) !important;
+  box-shadow:0 12px 38px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
 @media (prefers-color-scheme:dark){
-  html:not([data-wb-theme="light"]) #wb-tr-panel{background:#1f2430 !important; color:#e5e7eb !important; border-color:#3a4150 !important;}
+  html:not([data-wb-theme="light"]) #wb-tr-panel{
+    background:rgba(31,36,48,.88) !important; color:#e5e7eb !important;
+    border-color:rgba(255,255,255,.08) !important;
+    box-shadow:0 12px 38px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06) !important;
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  #wb-tr-toggle{transition:none !important;}
+  #wb-tr-panel{animation:none !important;}
 }
 #wb-tr-panel h3{margin:0 0 10px !important; font-size:14px !important; font-weight:700 !important; color:inherit !important; display:flex !important; justify-content:space-between !important;}
 #wb-tr-panel h3 span{cursor:pointer !important; color:#9ca3af !important; font-weight:400 !important;}
@@ -1091,6 +1146,14 @@ html[data-wb-theme="dark"] #wb-detect{background:rgba(120,170,255,.12) !importan
     else { document.documentElement.removeAttribute('data-wb-corner'); }
   }
 
+  // 面板显隐统一走这里，顺便让图标在展开时保持清晰
+  function setPanel(show) {
+    if (!panelEl || !rootEl) { return; }
+    panelEl.style.display = show ? 'block' : 'none';
+    rootEl.classList.toggle('wb-open', !!show);
+    if (show) { syncUI(); }
+  }
+
   function buildUI() {
     rootEl = document.createElement('div');
     rootEl.id = 'wb-tr-root';
@@ -1172,11 +1235,9 @@ html[data-wb-theme="dark"] #wb-detect{background:rgba(120,170,255,.12) !importan
 
     const $ = function (id) { return rootEl.querySelector(id); };
     toggleEl.addEventListener('click', function () {
-      const show = panelEl.style.display === 'none';
-      panelEl.style.display = show ? 'block' : 'none';
-      if (show) { syncUI(); }
+      setPanel(panelEl.style.display === 'none');
     });
-    $('#wb-tr-close').addEventListener('click', function () { panelEl.style.display = 'none'; });
+    $('#wb-tr-close').addEventListener('click', function () { setPanel(false); });
 
     $('#c-enabled').addEventListener('change', function (e) {
       cfg.enabled = e.target.checked; saveCfg();
@@ -1337,9 +1398,7 @@ html[data-wb-theme="dark"] #wb-detect{background:rgba(120,170,255,.12) !importan
       GM_registerMenuCommand('立即翻译本页 (Alt+Enter)', function () { translatePage(true); });
       GM_registerMenuCommand('清除本页译文', clearTranslations);
       GM_registerMenuCommand('重新识别本网页', onPageChanged);
-      GM_registerMenuCommand('打开设置面板', function () {
-        if (panelEl) { panelEl.style.display = 'block'; syncUI(); }
-      });
+      GM_registerMenuCommand('打开设置面板', function () { setPanel(true); });
     } catch (e) { /* 某些管理器不支持菜单 */ }
   }
 
