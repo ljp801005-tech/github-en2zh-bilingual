@@ -35,7 +35,7 @@ Greasy Fork 生成新版本（约数十秒）
 
 兜底：Greasy Fork 的「源代码同步」设为「自动 - 将定期检查更新并进行同步」，即使 Webhook 未触发，也会定期检查 raw 地址。
 
-当前状态：脚本同步（自动）与附加信息同步均已配置，仓库 Webhook 已启用（仅 `push` 事件，`application/json`）。1.4.0 已由一次真实同步生成 `Imported from URL` 版本。
+当前状态：脚本同步（自动）与附加信息同步均已配置，仓库 Webhook 已启用（仅 `push` 事件，`application/json`，使用 Greasy Fork 生成的 Secret），实测 push 回执 `HTTP 200 / OK` 且页面说明自动更新。1.4.0 已由一次真实同步生成 `Imported from URL` 版本。注意：Greasy Fork 的 Secret 必须先在用户页点「Generate」生成并填进 GitHub Webhook，否则请求一律 403。
 
 > **每次发版必须提升 `@version`**，否则 Greasy Fork 不会创建新版本。CI 会拦截版本号未递增的 push。
 
