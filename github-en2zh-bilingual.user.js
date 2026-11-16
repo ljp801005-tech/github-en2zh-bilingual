@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         github网页英译中双语对照
 // @namespace   workbuddy.userjs.en2zh.bilingual
-// @version     1.5.0
+// @version     1.6.0
 // @description 自动识别网页语言、站点与页面类型：GitHub 及纯英文外网自动把英文段落译为中文，显示在原文上方或下方，中文站点自动跳过。GitHub 跳过代码/diff/文件名并原样保留内联代码。默认网易有道，可切换百度或本地离线服务。隐私说明：在线翻译时会将页面英文文本发送至你所选的翻译服务（有道/百度）；本地离线模式数据不出本机。
 // @author      WorkBuddy
 // @license     MIT
@@ -1407,6 +1407,8 @@ html[data-wb-theme="dark"] #wb-detect{background:rgba(120,170,255,.12) !importan
   // ------------------------------------------------------------------
   function init() {
     if (!document.body) { return; }
+    // 幂等：同一页面已注入过实例时直接退出（例如同时装了 Chrome 扩展版与油猴版）
+    if (document.getElementById('wb-tr-root')) { return; }
     GM_addStyle(CSS);
     applyTheme();
     applyCorner();
