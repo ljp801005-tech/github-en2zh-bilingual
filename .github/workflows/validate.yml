@@ -24,6 +24,9 @@ jobs:
       - name: 元数据与版本号检查
         run: node scripts/check-meta.mjs
 
+      - name: Chrome 扩展一致性检查
+        run: node scripts/check-extension.mjs
+
       - name: 发版提示
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |

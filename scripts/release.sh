@@ -31,6 +31,8 @@ if ! node -e 'const a=process.argv[1].split(".").map(Number),b=process.argv[2].s
 fi
 
 cp "$SRC" "$TARGET"
+# 同步 Chrome 扩展：复制主脚本、对齐 manifest 版本、重新打包 zip
+bash "$ROOT/scripts/build-extension.sh" "$SRC"
 # 若工作区里维护着 Greasy Fork 详细说明，一并同步（GF 会从这个文件自动更新页面说明）
 DESC_SRC="$ROOT/../GreasyFork发布说明.md"
 if [[ -f "$DESC_SRC" ]]; then
@@ -54,3 +56,21 @@ echo ""
 echo "v$NEW_VER 已推送：https://github.com/ljp801005-tech/github-en2zh-bilingual/releases/tag/v$NEW_VER"
 echo "GitHub Webhook 会通知 Greasy Fork 拉取 raw 脚本，约数十秒后生成新版本："
 echo "  https://greasyfork.org/zh-CN/scripts/604516"
+
+# 把 Chrome 扩展 zip 挂到 Release，方便不用油猴的人直接下载（失败不阻断发版）
+ZIP="$ROOT/dist/github-en2zh-bilingual-chrome-v$NEW_VER.zip"
+if command -v gh >/dev/null 2>&1 && [[ -f "$ZIP" ]]; then
+  if gh release view "v$NEW_VER" >/dev/null 2>&1; then
+    if gh release upload "v$NEW_VER" "$ZIP" --clobber >/dev/null 2>&1; then
+      echo "已更新 Release 附件：$(basename "$ZIP")"
+    else
+      echo "Release 附件上传失败，可稍后手动上传：$ZIP"
+    fi
+  else
+    if gh release create "v$NEW_VER" "$ZIP" --title "v$NEW_VER" --generate-notes >/dev/null 2>&1; then
+      echo "已创建 Release 并上传扩展包：$(basename "$ZIP")"
+    else
+      echo "Release 创建失败，可稍后手动上传：$ZIP"
+    fi
+  fi
+fi

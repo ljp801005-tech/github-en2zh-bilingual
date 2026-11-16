@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ink: #1f2937;
+    --sub: #6b7280;
+    --line: rgba(148, 163, 184, .28);
+    --blue: #2563eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    width: 330px; margin: 0; padding: 16px;
+    font: 13px/1.55 -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    background: linear-gradient(165deg, #f8fbff 0%, #eef4ff 100%);
+  }
+  header { display: flex; align-items: center; gap: 11px; margin-bottom: 13px; }
+  .logo {
+    width: 42px; height: 42px; border-radius: 50%; flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 17px; font-weight: 600; letter-spacing: .5px;
+    background: linear-gradient(145deg, rgba(125, 185, 255, .95), rgba(37, 99, 235, .88));
+    border: 1px solid rgba(255, 255, 255, .6);
+    box-shadow: 0 5px 14px rgba(37, 99, 235, .28), inset 0 1px 0 rgba(255, 255, 255, .55);
+    text-shadow: 0 1px 3px rgba(15, 40, 120, .5);
+  }
+  h1 { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .2px; }
+  .ver { margin: 2px 0 0; font-size: 11px; color: var(--sub); }
+  .hint {
+    padding: 10px 11px; margin-bottom: 12px; border-radius: 10px;
+    background: rgba(37, 99, 235, .07); border: 1px solid rgba(37, 99, 235, .12);
+    color: #31548f; font-size: 12px;
+  }
+  .hint strong { color: #1d4ed8; }
+  .rows { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: rgba(255, 255, 255, .72); }
+  .row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 11px; font-size: 12px; border-bottom: 1px solid var(--line);
+  }
+  .row:last-child { border-bottom: none; }
+  .row span { color: var(--sub); }
+  .row b { font-weight: 600; }
+  .row b.on { color: #15803d; }
+  .row b.off { color: #b45309; }
+  .keys {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px;
+    margin: 12px 0; font-size: 11px; color: var(--sub);
+  }
+  kbd {
+    display: inline-block; min-width: 17px; padding: 1px 4px; margin-right: 2px;
+    font: 10px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #334155; background: #fff; border: 1px solid #cbd5e1;
+    border-bottom-width: 2px; border-radius: 4px; text-align: center;
+  }
+  .links { display: flex; gap: 8px; margin-bottom: 10px; }
+  .links a {
+    flex: 1; padding: 7px 4px; text-align: center; text-decoration: none;
+    font-size: 12px; color: var(--blue); border-radius: 8px;
+    background: rgba(255, 255, 255, .8); border: 1px solid rgba(37, 99, 235, .22);
+  }
+  .links a:hover { background: #fff; border-color: var(--blue); }
+  footer { font-size: 10.5px; line-height: 1.6; color: #94a3b8; }
+  @media (prefers-color-scheme: dark) {
+    body { color: #e5e7eb; background: linear-gradient(165deg, #171b24 0%, #1f2634 100%); }
+    .hint { background: rgba(96, 165, 250, .12); border-color: rgba(96, 165, 250, .2); color: #a9c9ff; }
+    .hint strong { color: #bfdbfe; }
+    .rows { background: rgba(31, 36, 48, .8); border-color: rgba(255, 255, 255, .1); }
+    .row { border-color: rgba(255, 255, 255, .07); }
+    .row b.on { color: #86efac; }
+    .row b.off { color: #fcd34d; }
+    kbd { color: #e2e8f0; background: #2b3444; border-color: #3f4a5c; }
+    .links a { color: #93c5fd; background: rgba(31, 36, 48, .9); border-color: rgba(96, 165, 250, .3); }
+    .links a:hover { background: #232b3a; }
+    footer { color: #6b7280; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">译</div>
+    <div>
+      <h1>网页英译中 · 双语对照</h1>
+      <p class="ver">Chrome 扩展 v<span id="ver">-</span></p>
+    </div>
+  </header>
+
+  <div class="hint">在英文网页<strong>左下角</strong>点「译」图标即可开关与设置；中文网站会自动跳过。首次安装后请刷新已打开的网页。</div>
+
+  <div class="rows">
+    <div class="row"><span>翻译源</span><b id="src">-</b></div>
+    <div class="row"><span>译文位置</span><b id="pos">-</b></div>
+    <div class="row"><span>翻译状态</span><b id="state">-</b></div>
+  </div>
+
+  <div class="keys">
+    <div><kbd>Alt</kbd><kbd>T</kbd> 开关翻译</div>
+    <div><kbd>Alt</kbd><kbd>P</kbd> 译文上/下</div>
+    <div><kbd>Alt</kbd><kbd>Enter</kbd> 翻译本页</div>
+    <div><kbd>Alt</kbd><kbd>S</kbd> 划词翻译</div>
+  </div>
+
+  <div class="links">
+    <a href="https://github.com/ljp801005-tech/github-en2zh-bilingual" target="_blank" rel="noreferrer">源码与教程</a>
+    <a href="https://greasyfork.org/zh-CN/scripts/604516" target="_blank" rel="noreferrer">油猴版</a>
+  </div>
+
+  <footer>配置只保存在本机浏览器，不上传；在线翻译时会把待译英文发送给所选翻译源。</footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
